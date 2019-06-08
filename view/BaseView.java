@@ -4,17 +4,22 @@ import javax.swing.*;
 
 public abstract class BaseView extends JFrame {
 
-    public BaseView() { init(); }
+    public BaseView() {}
 
-    public void init() {
+    public void init(String title) {
         this.setElement();
         this.addElement();
         this.addListener();
-        this.setFrame();
+        this.setFrame(title);
     }
 
     protected abstract void setElement();
     protected abstract void addElement();
     protected abstract void addListener();
-    protected abstract void setFrame();
+    protected void setFrame(String title) {
+        this.setTitle(title);
+        this.setBounds(300, 100, 800, 500);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setVisible(true);
+    }
 }
