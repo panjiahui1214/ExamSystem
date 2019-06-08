@@ -1,0 +1,8 @@
+下面哪个是世界上最好的语言？<br> A. php<br> B. java<br> C. python<br> D. C++<#>B
+下面哪个不是java的基本数据类型？<br> A. int<br> B. boolean<br> C. String<br> D. float<#>C
+下面哪个不是java的权限修饰符？<br> A. static<br> B. public<br> C. private<br> D. protected<#>A
+下面哪一项不是JDBC加载MySQL驱动程序的方法？<br> A. 通过DriverManager.getConnection方法加载<br> B. 调用方法Class.forName();<br> C. 通过添加系统的jdbc.drivers属性<br> D. 通过new Driver()对象<#>A
+关于构造方法说法错误的是？<br> A. 构造方法名与类名相同<br> B. 构造方法无返回值，可以使用void修饰<br> C. 狗仔方法在创建对象时被调用<br> D. 在一个类中如果没有明确地给出构造方法，编译器会自动提供一个构造方法<#>B
+关于static修饰变量说法正确的是？<br> A. 静态变量不能再次赋值<br> B. 方法中声明的静态变量在被调用的过程中保持值不变<br> C. 静态变量被该类的所有实例对象共享<br> D. 静态变量只能使用初值<#>C
+下列属于key-value使用方式的是？<br> A. HashMap<br> B. ArrayList<br> C. Vector<br> D. LinkedList<#>A
+在网络编程中，ServerSocket接受对方连接的方法是？<br> A. accept<br> B. connect<br> C. receive<br> D. bind<#>A
