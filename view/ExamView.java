@@ -1,10 +1,18 @@
 package view;
 
+import domain.Question;
+import server.QuestionServer;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class ExamView extends BaseView {
-    private String title;
+    private String title; // 窗口标题
+
+    private int nowNum = 1; // 当前题号
+    private int sumNum = 5; // 总共题数
+    private int passNum = 0; // 已答题数
 
     public ExamView(String title) {
         this.title = title;
@@ -12,7 +20,8 @@ public class ExamView extends BaseView {
     }
 
     private JPanel jPanel = new JPanel();
-    private JTextField mainText = new JTextField();
+    private JLabel mainText = new JLabel();
+    private JScrollPane jScrollPane = new JScrollPane(mainText);
     private JButton btnA = new JButton("A");
     private JButton btnB = new JButton("B");
     private JButton btnC = new JButton("C");
@@ -26,32 +35,34 @@ public class ExamView extends BaseView {
     private JLabel labelPassQ = new JLabel("已答题数：");
     private JLabel labelWaitQ = new JLabel("未答题数：");
 
-    private JTextField nowQ = new JTextField();
-    private JTextField sumQ = new JTextField();
-    private JTextField passQ = new JTextField();
-    private JTextField waitQ = new JTextField();
+    private JLabel nowQ = new JLabel(nowNum + "");
+    private JLabel sumQ = new JLabel(sumNum + "");
+    private JLabel passQ = new JLabel(passNum + "");
+    private JLabel waitQ = new JLabel(sumNum - passNum + "");
 
     private JLabel labelLeftTime = new JLabel("剩余答题时间");
-    private JTextField leftHour = new JTextField();
-    private JTextField leftMin = new JTextField();
-    private JTextField leftSec = new JTextField();
-    private JLabel labelColon1 = new JLabel(":");
-    private JLabel labelColon2 = new JLabel(":");
+    private JLabel leftHour = new JLabel("01");
+    private JLabel leftMin = new JLabel("00");
+    private JLabel leftSec = new JLabel("00");
+    private JLabel labelColon1 = new JLabel("：");
+    private JLabel labelColon2 = new JLabel("：");
 
     private Font bigFont = new Font("黑体", Font.LAYOUT_LEFT_TO_RIGHT, 20);
 
     @Override
     protected void setElement() {
         jPanel.setLayout(null);
-        mainText.setBounds(20, 20, 550, 330);
-        mainText.setEnabled(false);
+        jScrollPane.setBounds(20, 20, 550, 330);
         mainText.setFont(bigFont);
+        mainText.setVerticalTextPosition(JLabel.TOP);
+
         btnA.setBounds(60, 370, 80, 30);
         btnB.setBounds(190, 370, 80, 30);
         btnC.setBounds(310, 370, 80, 30);
         btnD.setBounds(430, 370, 80, 30);
         btnPrev.setBounds(60, 420, 80, 30);
         btnSubmit.setBounds(250, 420, 80, 30);
+        btnSubmit.setForeground(Color.RED);
         btnNext.setBounds(430, 420, 80, 30);
 
         labelNowQ.setBounds(600, 60, 100, 30);
@@ -64,39 +75,49 @@ public class ExamView extends BaseView {
         labelWaitQ.setFont(bigFont);
 
         nowQ.setBounds(715, 60, 50, 30);
-        setTextField(nowQ);
+        setFontAndBlue(nowQ);
         sumQ.setBounds(715, 130, 50, 30);
-        setTextField(sumQ);
+        setFontAndBlue(sumQ);
         passQ.setBounds(715, 200, 50, 30);
-        setTextField(passQ);
+        setFontAndBlue(passQ);
         waitQ.setBounds(715, 270, 50, 30);
-        setTextField(waitQ);
+        setFontAndBlue(waitQ);
 
-        labelLeftTime.setBounds(620, 350, 120, 30);
-        labelLeftTime.setForeground(Color.RED);
-        labelLeftTime.setFont(bigFont);
-        leftHour.setBounds(620, 400, 30, 30);
-        setTextField(leftHour);
-        labelColon1.setBounds(650, 400, 15, 30);
-        labelColon1.setFont(bigFont);
-        leftMin.setBounds(665, 400, 30, 30);
-        setTextField(leftMin);
-        labelColon2.setBounds(695, 400, 15, 30);
-        labelColon2.setFont(bigFont);
-        leftSec.setBounds(710, 400, 30, 30);
-        setTextField(leftSec);
+        labelLeftTime.setBounds(605, 365, 120, 30);
+        setFontAndRed(labelLeftTime);
+        leftHour.setBounds(610, 400, 30, 30);
+        setFontAndRed(leftHour);
+        labelColon1.setBounds(640, 400, 20, 30);
+        setFontAndRed(labelColon1);
+        leftMin.setBounds(655, 400, 30, 30);
+        setFontAndRed(leftMin);
+        labelColon2.setBounds(685, 400, 20, 30);
+        setFontAndRed(labelColon2);
+        leftSec.setBounds(700, 400, 30, 30);
+        setFontAndRed(leftSec);
+
+        this.showQuestion();
     }
 
-    protected void setTextField(JTextField jtf) {
-        jtf.setHorizontalAlignment(JTextField.CENTER);
-        jtf.setForeground(Color.BLUE);
-        jtf.setEnabled(false);
-        jtf.setFont(bigFont);
+    protected void setFontAndBlue(JLabel jl) {
+        jl.setForeground(Color.BLUE);
+        jl.setFont(bigFont);
+    }
+    protected void setFontAndRed(JLabel jl) {
+        jl.setForeground(Color.RED);
+        jl.setFont(bigFont);
+    }
+
+    protected void showQuestion() {
+        QuestionServer qs = new QuestionServer();
+        ArrayList<Question> questions = qs.getPaper(sumNum);
+        String title = questions.get(nowNum).getTitle();
+        mainText.setText(title.replace("<br>", "\n"));
     }
 
     @Override
     protected void addElement() {
-        jPanel.add(mainText);
+        jPanel.add(jScrollPane);
         jPanel.add(btnA);
         jPanel.add(btnB);
         jPanel.add(btnC);
