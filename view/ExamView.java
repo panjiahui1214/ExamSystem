@@ -20,7 +20,7 @@ public class ExamView extends BaseView {
     }
 
     private JPanel jPanel = new JPanel();
-    private JLabel mainText = new JLabel();
+    private JTextArea mainText = new JTextArea();
     private JScrollPane jScrollPane = new JScrollPane(mainText);
     private JButton btnA = new JButton("A");
     private JButton btnB = new JButton("B");
@@ -53,8 +53,11 @@ public class ExamView extends BaseView {
     protected void setElement() {
         jPanel.setLayout(null);
         jScrollPane.setBounds(20, 20, 550, 330);
-        mainText.setFont(bigFont);
-        mainText.setVerticalAlignment(JLabel.TOP);
+        jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // 设置不产生水平滚动条
+        mainText.setEnabled(false);
+        mainText.setLineWrap(true); // 设置自动换行
+        mainText.setWrapStyleWord(true); // 设置换行不断字
+        mainText.setFont(new Font("黑体", Font.BOLD, 23));
 
         btnA.setBounds(60, 370, 80, 30);
         btnB.setBounds(190, 370, 80, 30);
@@ -112,7 +115,7 @@ public class ExamView extends BaseView {
         QuestionServer qs = new QuestionServer();
         ArrayList<Question> questions = qs.getPaper(sumNum);
         String title = questions.get(nowNum).getTitle();
-        mainText.setText(title.replace("<br>", "\n"));
+        mainText.setText(nowNum + "." + title.replace("<br>", "\n "));
     }
 
     @Override
