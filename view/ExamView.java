@@ -54,7 +54,7 @@ public class ExamView extends BaseView {
         jPanel.setLayout(null);
         jScrollPane.setBounds(20, 20, 550, 330);
         mainText.setFont(bigFont);
-        mainText.setVerticalTextPosition(JLabel.TOP);
+        mainText.setVerticalAlignment(JLabel.TOP);
 
         btnA.setBounds(60, 370, 80, 30);
         btnB.setBounds(190, 370, 80, 30);
