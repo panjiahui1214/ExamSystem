@@ -67,7 +67,7 @@ public class LoginView extends BaseView {
                 }
                 else {
                     LoginView.this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                    new ExamView("考试-在线考试系统");
+                    new ExamView("考试-在线考试系统", 5);
                 }
             }
         };

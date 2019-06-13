@@ -5,17 +5,31 @@ import server.QuestionServer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ExamView extends BaseView {
     private String title; // 窗口标题
 
+    private int sumNum; // 总共题数
     private int nowNum = 1; // 当前题号
-    private int sumNum = 5; // 总共题数
     private int passNum = 0; // 已答题数
 
-    public ExamView(String title) {
+    private ArrayList<String> titles; // 存放试卷题目
+    private ArrayList<String> answers; // 存放试卷正确答案
+    private HashMap<Integer, String> userAnswers = new HashMap<>(); // 存放用户的答案
+
+    public ExamView(String title, int sumNum) {
         this.title = title;
+        this.sumNum = sumNum;
+        // 获取试题
+        QuestionServer qs = new QuestionServer();
+        HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
+        this.titles = paper.get("titles");
+        this.answers = paper.get("answers");
+
         this.init(title);
     }
 
@@ -112,10 +126,8 @@ public class ExamView extends BaseView {
     }
 
     protected void showQuestion() {
-        QuestionServer qs = new QuestionServer();
-        ArrayList<Question> questions = qs.getPaper(sumNum);
-        String title = questions.get(nowNum).getTitle();
-        mainText.setText(nowNum + "." + title.replace("<br>", "\n "));
+        String title = titles.get(nowNum);
+        mainText.setText("\n " + nowNum + "." + title.replace("<br>", "\n  "));
     }
 
     @Override
@@ -151,6 +163,16 @@ public class ExamView extends BaseView {
 
     @Override
     protected void addListener() {
-
+        // 答案选项按钮的监听事件
+        ActionListener answerListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswers.put(nowNum, ((JButton)e.getSource()).getText());
+            }
+        };
+        btnA.addActionListener(answerListener);
+        btnB.addActionListener(answerListener);
+        btnC.addActionListener(answerListener);
+        btnD.addActionListener(answerListener);
     }
 }
