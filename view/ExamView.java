@@ -21,18 +21,6 @@ public class ExamView extends BaseView {
     private ArrayList<String> answers; // 存放试卷正确答案
     private HashMap<Integer, String> userAnswers = new HashMap<>(); // 存放用户的答案
 
-    public ExamView(String title, int sumNum) {
-        this.title = title;
-        this.sumNum = sumNum;
-        // 获取试题
-        QuestionServer qs = new QuestionServer();
-        HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
-        this.titles = paper.get("titles");
-        this.answers = paper.get("answers");
-
-        this.init(title);
-    }
-
     private JPanel jPanel = new JPanel();
     private JTextArea mainText = new JTextArea();
     private JScrollPane jScrollPane = new JScrollPane(mainText);
@@ -40,21 +28,13 @@ public class ExamView extends BaseView {
     private JButton btnB = new JButton("B");
     private JButton btnC = new JButton("C");
     private JButton btnD = new JButton("D");
-
     private JButton btnPrev = new JButton("上一题");
     private JButton btnSubmit = new JButton("交卷");
     private JButton btnNext = new JButton("下一题");
-    private JLabel labelNowQ = new JLabel("当前题号：");
-    private JLabel labelSumQ = new JLabel("总共题数：");
-    private JLabel labelPassQ = new JLabel("已答题数：");
-    private JLabel labelWaitQ = new JLabel("未答题数：");
 
-    private JLabel nowQ = new JLabel(nowNum + "");
-    private JLabel sumQ = new JLabel(sumNum + "");
-    private JLabel passQ = new JLabel(passNum + "");
-    private JLabel waitQ = new JLabel(sumNum - passNum + "");
-
+    private JPanel numBtnJP = new JPanel();
     private JLabel labelLeftTime = new JLabel("剩余答题时间");
+
     private JLabel leftHour = new JLabel("01");
     private JLabel leftMin = new JLabel("00");
     private JLabel leftSec = new JLabel("00");
@@ -62,6 +42,20 @@ public class ExamView extends BaseView {
     private JLabel labelColon2 = new JLabel("：");
 
     private Font bigFont = new Font("黑体", Font.LAYOUT_LEFT_TO_RIGHT, 20);
+
+    private ActionListener numBtnListener; // 题号按钮的侦听事件
+
+    public ExamView(String title, int sumNum) {
+        this.title = title;
+        // 获取试题
+        QuestionServer qs = new QuestionServer();
+        HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
+        this.titles = paper.get("titles");
+        this.answers = paper.get("answers");
+        this.sumNum = titles.size();
+        // 初始化
+        this.init(title);
+    }
 
     @Override
     protected void setElement() {
@@ -82,23 +76,7 @@ public class ExamView extends BaseView {
         btnSubmit.setForeground(Color.RED);
         btnNext.setBounds(430, 420, 80, 30);
 
-        labelNowQ.setBounds(600, 60, 100, 30);
-        labelNowQ.setFont(bigFont);
-        labelSumQ.setBounds(600, 130, 100, 30);
-        labelSumQ.setFont(bigFont);
-        labelPassQ.setBounds(600, 200, 100, 30);
-        labelPassQ.setFont(bigFont);
-        labelWaitQ.setBounds(600, 270, 100, 30);
-        labelWaitQ.setFont(bigFont);
-
-        nowQ.setBounds(715, 60, 50, 30);
-        setFontAndBlue(nowQ);
-        sumQ.setBounds(715, 130, 50, 30);
-        setFontAndBlue(sumQ);
-        passQ.setBounds(715, 200, 50, 30);
-        setFontAndBlue(passQ);
-        waitQ.setBounds(715, 270, 50, 30);
-        setFontAndBlue(waitQ);
+        numBtnJP.setBounds(580, 15, 190, 330);
 
         labelLeftTime.setBounds(605, 365, 120, 30);
         setFontAndRed(labelLeftTime);
@@ -116,10 +94,6 @@ public class ExamView extends BaseView {
         this.showQuestion();
     }
 
-    protected void setFontAndBlue(JLabel jl) {
-        jl.setForeground(Color.BLUE);
-        jl.setFont(bigFont);
-    }
     protected void setFontAndRed(JLabel jl) {
         jl.setForeground(Color.RED);
         jl.setFont(bigFont);
@@ -128,6 +102,31 @@ public class ExamView extends BaseView {
     protected void showQuestion() {
         String title = titles.get(nowNum);
         mainText.setText("\n " + nowNum + "." + title.replace("<br>", "\n  "));
+    }
+
+    @Override
+    protected void addListener() {
+        // 答案选项按钮的监听事件
+        ActionListener answerListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btn = (JButton)e.getSource();
+                userAnswers.put(nowNum, btn.getText());
+                btn.setBackground(Color.CYAN);
+            }
+        };
+        btnA.addActionListener(answerListener);
+        btnB.addActionListener(answerListener);
+        btnC.addActionListener(answerListener);
+        btnD.addActionListener(answerListener);
+
+        // 题号按钮的侦听事件
+        numBtnListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        };
     }
 
     @Override
@@ -141,15 +140,13 @@ public class ExamView extends BaseView {
         jPanel.add(btnSubmit);
         jPanel.add(btnNext);
 
-        jPanel.add(labelNowQ);
-        jPanel.add(labelSumQ);
-        jPanel.add(labelPassQ);
-        jPanel.add(labelWaitQ);
-
-        jPanel.add(nowQ);
-        jPanel.add(sumQ);
-        jPanel.add(passQ);
-        jPanel.add(waitQ);
+        // 循环处理题号按钮
+        for (int i = 1; i <= sumNum; i ++) {
+            JButton tempBtn = new JButton(i+"");
+            tempBtn.addActionListener(numBtnListener);
+            numBtnJP.add(tempBtn);
+        }
+        jPanel.add(numBtnJP);
 
         jPanel.add(labelLeftTime);
         jPanel.add(leftHour);
@@ -159,20 +156,5 @@ public class ExamView extends BaseView {
         jPanel.add(labelColon2);
 
         this.add(jPanel);
-    }
-
-    @Override
-    protected void addListener() {
-        // 答案选项按钮的监听事件
-        ActionListener answerListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userAnswers.put(nowNum, ((JButton)e.getSource()).getText());
-            }
-        };
-        btnA.addActionListener(answerListener);
-        btnB.addActionListener(answerListener);
-        btnC.addActionListener(answerListener);
-        btnD.addActionListener(answerListener);
     }
 }

@@ -8,8 +8,8 @@ public abstract class BaseView extends JFrame {
 
     public void init(String title) {
         this.setElement();
-        this.addElement();
         this.addListener();
+        this.addElement();
         this.setFrame(title);
     }
 

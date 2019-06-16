@@ -19,6 +19,10 @@ public class QuestionServer {
 
     public HashMap<String, ArrayList> getPaper(int count) {
         HashSet<Question> qSet = new HashSet<>();
+        // 严谨性判断，如果要求试卷题数超过题库题数，则取题库题数
+        if (count > questions.size()) {
+            count = questions.size();
+        }
         while (qSet.size() < count) {
             Random rand = new Random();
             int index = rand.nextInt(questions.size());
