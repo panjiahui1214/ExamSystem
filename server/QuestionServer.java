@@ -17,6 +17,12 @@ public class QuestionServer {
         questions = qd.selectQuestions();
     }
 
+    /**
+     * 获得试卷
+     * @param   count   题目数量
+     * @return  HashMap "titles"    题目ArrayList
+     *                  "answers"   正确答案ArrayList
+     */
     public HashMap<String, ArrayList> getPaper(int count) {
         HashSet<Question> qSet = new HashSet<>();
         // 严谨性判断，如果要求试卷题数超过题库题数，则取题库题数
@@ -40,5 +46,21 @@ public class QuestionServer {
         paper.put("titles", titles);
         paper.put("answers", answers);
         return paper;
+    }
+
+    /**
+     * 获得分数（目前暂时默认一题5分）
+     * @param realAnswers   试卷正确答案
+     * @param userAnswers   学生选择答案
+     * @return  int 学生分数
+     */
+    public int getScore(ArrayList<String> realAnswers, String[] userAnswers) {
+        int score = 0;
+        for (int i = 0; i < userAnswers.length; i ++) {
+            if (realAnswers.get(i).equals(userAnswers[i])) {
+                score += 5;
+            }
+        }
+        return score;
     }
 }

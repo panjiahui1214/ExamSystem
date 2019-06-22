@@ -44,6 +44,8 @@ public class ExamView extends BaseView {
     private LeftTimeThread leftTimeThread = new LeftTimeThread(); // 剩余答题时间线程
     private boolean leftTimeSwitch = true; // 剩余答题时间线程开关按钮
 
+    private QuestionServer qs = new QuestionServer();
+
     public ExamView(String title, int sumNum, int sumMinute, String userName) {
         if (sumNum > 32) {
             alertAndExit("非常抱歉！目前该系统最大只支持32道题");
@@ -53,8 +55,7 @@ public class ExamView extends BaseView {
         this.userName = userName;
         labelUserName.setText("考生：" + userName);
         // 获取试题
-        QuestionServer qs = new QuestionServer();
-        HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
+        HashMap<String, ArrayList> paper = this.qs.getPaper(sumNum);
         this.titles = paper.get("titles");
         this.answers = paper.get("answers");
         this.userAnswers = new String[answers.size()];
@@ -250,8 +251,8 @@ public class ExamView extends BaseView {
     protected void submit() {
         // 停止剩余答题时间线程
         leftTimeSwitch = false;
-
-        JOptionPane.showMessageDialog(ExamView.this, "考试结束");
+        int score = this.qs.getScore(answers, userAnswers);
+        alertAndExit("考试结束，" + userName + "的成绩为" + score + "分");
     }
 
 }
