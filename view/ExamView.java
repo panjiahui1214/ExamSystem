@@ -14,37 +14,37 @@ public class ExamView extends BaseView {
     private String title; // 窗口标题
     private int sumNum; // 总共题数
     private int nowNum = 0; // 当前题号
-    private int minute; // 考试时间
+    private int sumMinute; // 考试时间（分钟）
     private ArrayList<String> titles; // 试卷题目
     private ArrayList<String> answers; // 试卷正确答案
     private String[] userAnswers; // 学生答案
 
     private JPanel jPanel = new JPanel();
+    // 左上题目展示区域
     private JTextArea mainText = new JTextArea();
     private JScrollPane jScrollPane = new JScrollPane(mainText);
+    // 左下按钮操作区域
     private JButton btnA = new JButton("A");
     private JButton btnB = new JButton("B");
     private JButton btnC = new JButton("C");
     private JButton btnD = new JButton("D");
     private JButton btnSubmit = new JButton("交卷");
-
+    // 右上题号按钮区域
     private JPanel numBtnJP = new JPanel();
+    // 右下剩余答题时间区域
     private JLabel labelLeftTime = new JLabel("剩余答题时间");
-
-    private JLabel leftHour = new JLabel("01");
-    private JLabel leftMin = new JLabel("00");
-    private JLabel leftSec = new JLabel("00");
-    private JLabel labelColon1 = new JLabel("：");
-    private JLabel labelColon2 = new JLabel("：");
+    private JLabel leftTime = new JLabel();
 
     private Font bigFont = new Font("黑体", Font.LAYOUT_LEFT_TO_RIGHT, 20);
 
     private ActionListener numBtnListener; // 题号按钮的侦听事件
-    private Color btnAnswerColor = Color.GREEN; // 答案选项按钮选中的颜色
+    private Color btnAnswerColor = Color.CYAN; // 答案选项按钮选中的颜色
+    private LeftTimeThread leftTimeThread = new LeftTimeThread(); // 剩余答题时间线程
+    private boolean leftTimeSwitch = true; // 剩余答题时间线程开关按钮
 
-    public ExamView(String title, int sumNum, int minute) {
+    public ExamView(String title, int sumNum, int sumMinute) {
         this.title = title;
-        this.minute = minute;
+        this.sumMinute = sumMinute;
         // 获取试题
         QuestionServer qs = new QuestionServer();
         HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
@@ -77,16 +77,8 @@ public class ExamView extends BaseView {
 
         labelLeftTime.setBounds(605, 365, 120, 30);
         setFontAndRed(labelLeftTime);
-        leftHour.setBounds(610, 400, 30, 30);
-        setFontAndRed(leftHour);
-        labelColon1.setBounds(640, 400, 20, 30);
-        setFontAndRed(labelColon1);
-        leftMin.setBounds(655, 400, 30, 30);
-        setFontAndRed(leftMin);
-        labelColon2.setBounds(685, 400, 20, 30);
-        setFontAndRed(labelColon2);
-        leftSec.setBounds(700, 400, 30, 30);
-        setFontAndRed(leftSec);
+        leftTime.setBounds(625, 400, 120, 30);
+        setFontAndRed(leftTime);
 
         this.showQuestion();
     }
@@ -98,7 +90,7 @@ public class ExamView extends BaseView {
 
     protected void showQuestion() {
         String title = titles.get(nowNum);
-        mainText.setText("\n " + (nowNum+1) + "." + title.replace("<br>", "\n  "));
+        mainText.setText("\n "+ (nowNum+1) +"."+ title.replace("<br>", "\n  "));
     }
 
     @Override
@@ -117,7 +109,7 @@ public class ExamView extends BaseView {
         btnC.addActionListener(answerListener);
         btnD.addActionListener(answerListener);
 
-        // 题号按钮的侦听事件
+        // 题号按钮的监听事件
         numBtnListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,6 +121,19 @@ public class ExamView extends BaseView {
                 showSetAnswer();
             }
         };
+
+        // 交卷按钮的监听事件
+        ActionListener submitActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int confirm = JOptionPane.showConfirmDialog(ExamView.this, "确认交卷吗？");
+                // confirm: 0-是 1-否 2-取消
+                if(confirm == 0) {
+                    submit();
+                }
+            }
+        };
+        btnSubmit.addActionListener(submitActionListener);
     }
 
     protected void revertBtnAnswer() {
@@ -165,18 +170,12 @@ public class ExamView extends BaseView {
         jPanel.add(btnC);
         jPanel.add(btnD);
         jPanel.add(btnSubmit);
-
         forNumbtn();
         jPanel.add(numBtnJP);
-
         jPanel.add(labelLeftTime);
-        jPanel.add(leftHour);
-        jPanel.add(leftMin);
-        jPanel.add(leftSec);
-        jPanel.add(labelColon1);
-        jPanel.add(labelColon2);
-
+        jPanel.add(leftTime);
         this.add(jPanel);
+        leftTimeThread.start();
     }
 
     // 循环处理题号按钮
@@ -190,4 +189,50 @@ public class ExamView extends BaseView {
             numBtnJP.add(tempBtn);
         }
     }
+
+    // 使用线程动态显示剩余答题时间
+    protected class LeftTimeThread extends Thread {
+        public void run() {
+            int leftSeconds = sumMinute * 60;
+            int hour = sumMinute/60;
+            int minute = sumMinute%60;
+            int seconds = sumMinute/3600;
+
+            while(leftTimeSwitch) {
+                leftTime.setText((hour<10 ? "0"+hour : hour) +":"+ (minute<10 ? "0"+minute : minute) +":"+ (seconds<10 ? "0"+seconds : seconds));
+                if (leftSeconds == 0) {
+                    submit();
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                leftSeconds--;
+                if (seconds == 0) {
+                    if (minute == 0) {
+                        hour--;
+                        minute = 59;
+                    }
+                    else {
+                        minute--;
+                    }
+                    seconds = 59;
+                }
+                else {
+                    seconds--;
+                }
+            }
+        }
+    }
+
+    // 交卷
+    protected void submit() {
+        // 停止剩余答题时间线程
+        leftTimeSwitch = false;
+
+        JOptionPane.showMessageDialog(ExamView.this, "考试结束");
+    }
+
 }
