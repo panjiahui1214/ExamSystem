@@ -12,15 +12,12 @@ import java.util.HashMap;
 
 public class ExamView extends BaseView {
     private String title; // 窗口标题
-
     private int sumNum; // 总共题数
     private int nowNum = 0; // 当前题号
-
-    private Color btnAnswerColor = Color.GREEN;
-
-    private ArrayList<String> titles; // 存放试卷题目
-    private ArrayList<String> answers; // 存放试卷正确答案
-    private String[] userAnswers; // 存放用户的答案
+    private int minute; // 考试时间
+    private ArrayList<String> titles; // 试卷题目
+    private ArrayList<String> answers; // 试卷正确答案
+    private String[] userAnswers; // 学生答案
 
     private JPanel jPanel = new JPanel();
     private JTextArea mainText = new JTextArea();
@@ -43,9 +40,11 @@ public class ExamView extends BaseView {
     private Font bigFont = new Font("黑体", Font.LAYOUT_LEFT_TO_RIGHT, 20);
 
     private ActionListener numBtnListener; // 题号按钮的侦听事件
+    private Color btnAnswerColor = Color.GREEN; // 答案选项按钮选中的颜色
 
-    public ExamView(String title, int sumNum) {
+    public ExamView(String title, int sumNum, int minute) {
         this.title = title;
+        this.minute = minute;
         // 获取试题
         QuestionServer qs = new QuestionServer();
         HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
@@ -166,7 +165,7 @@ public class ExamView extends BaseView {
         jPanel.add(btnC);
         jPanel.add(btnD);
         jPanel.add(btnSubmit);
-        
+
         forNumbtn();
         jPanel.add(numBtnJP);
 
