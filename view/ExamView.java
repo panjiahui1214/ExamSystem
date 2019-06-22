@@ -216,7 +216,7 @@ public class ExamView extends BaseView {
             int leftSeconds = sumMinute * 60;
             int hour = sumMinute/60;
             int minute = sumMinute%60;
-            int seconds = sumMinute/3600;
+            int seconds = 0;
 
             while(leftTimeSwitch) {
                 leftTime.setText((hour<10 ? "0"+hour : hour) +":"+ (minute<10 ? "0"+minute : minute) +":"+ (seconds<10 ? "0"+seconds : seconds));
