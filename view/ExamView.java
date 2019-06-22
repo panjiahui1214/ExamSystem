@@ -166,16 +166,8 @@ public class ExamView extends BaseView {
         jPanel.add(btnC);
         jPanel.add(btnD);
         jPanel.add(btnSubmit);
-
-        // 循环处理题号按钮
-        for (int i = 1; i <= sumNum; i ++) {
-            JButton tempBtn = new JButton(i+"");
-            if (i == 1) {
-                tempBtn.setBackground(Color.LIGHT_GRAY);
-            }
-            tempBtn.addActionListener(numBtnListener);
-            numBtnJP.add(tempBtn);
-        }
+        
+        forNumbtn();
         jPanel.add(numBtnJP);
 
         jPanel.add(labelLeftTime);
@@ -186,5 +178,17 @@ public class ExamView extends BaseView {
         jPanel.add(labelColon2);
 
         this.add(jPanel);
+    }
+
+    // 循环处理题号按钮
+    protected void forNumbtn() {
+        for (int i = 1; i <= sumNum; i ++) {
+            JButton tempBtn = new JButton(i+"");
+            if (i == 1) {
+                tempBtn.setBackground(Color.LIGHT_GRAY);
+            }
+            tempBtn.addActionListener(numBtnListener);
+            numBtnJP.add(tempBtn);
+        }
     }
 }
