@@ -1,6 +1,5 @@
 package view;
 
-import domain.Question;
 import server.QuestionServer;
 
 import javax.swing.*;
@@ -17,7 +16,8 @@ public class ExamView extends BaseView {
     private int sumMinute; // 考试时间（分钟）
     private ArrayList<String> titles; // 试卷题目
     private ArrayList<String> answers; // 试卷正确答案
-    private String[] userAnswers; // 学生答案
+    private String[] userAnswers; // 考生答案
+    private String userName; // 考生姓名
 
     private JPanel jPanel = new JPanel();
     // 左上题目展示区域
@@ -34,6 +34,8 @@ public class ExamView extends BaseView {
     // 右下剩余答题时间区域
     private JLabel labelLeftTime = new JLabel("剩余答题时间");
     private JLabel leftTime = new JLabel();
+    // 右下考生姓名区域
+    private JLabel labelUserName = new JLabel();
 
     private Font bigFont = new Font("黑体", Font.LAYOUT_LEFT_TO_RIGHT, 20);
 
@@ -42,18 +44,31 @@ public class ExamView extends BaseView {
     private LeftTimeThread leftTimeThread = new LeftTimeThread(); // 剩余答题时间线程
     private boolean leftTimeSwitch = true; // 剩余答题时间线程开关按钮
 
-    public ExamView(String title, int sumNum, int sumMinute) {
+    public ExamView(String title, int sumNum, int sumMinute, String userName) {
+        if (sumNum > 32) {
+            alertAndExit("非常抱歉！目前该系统最大只支持32道题");
+        }
         this.title = title;
         this.sumMinute = sumMinute;
+        this.userName = userName;
+        labelUserName.setText("考生：" + userName);
         // 获取试题
         QuestionServer qs = new QuestionServer();
         HashMap<String, ArrayList> paper = qs.getPaper(sumNum);
         this.titles = paper.get("titles");
         this.answers = paper.get("answers");
         this.userAnswers = new String[answers.size()];
-        this.sumNum = titles.size();
+        if (sumNum > titles.size()) {
+            alertAndExit("非常抱歉！请求题数大于题库数量！");
+        }
+        this.sumNum = sumNum;
         // 初始化
         this.init(title);
+    }
+
+    protected void alertAndExit(String message) {
+        JOptionPane.showMessageDialog(ExamView.this, message);
+        System.exit(0);
     }
 
     @Override
@@ -75,17 +90,20 @@ public class ExamView extends BaseView {
 
         numBtnJP.setBounds(580, 15, 190, 330);
 
-        labelLeftTime.setBounds(605, 365, 120, 30);
-        setFontAndRed(labelLeftTime);
-        leftTime.setBounds(625, 400, 120, 30);
-        setFontAndRed(leftTime);
+        labelLeftTime.setBounds(600, 360, 120, 30);
+        setFontAndColor(labelLeftTime, bigFont, Color.RED);
+        leftTime.setBounds(625, 390, 120, 30);
+        setFontAndColor(leftTime, bigFont, Color.RED);
+
+        labelUserName.setBounds(580, 420, 210, 30);
+        setFontAndColor(labelUserName, bigFont, Color.BLUE);
 
         this.showQuestion();
     }
 
-    protected void setFontAndRed(JLabel jl) {
-        jl.setForeground(Color.RED);
-        jl.setFont(bigFont);
+    protected void setFontAndColor(JLabel jl, Font font, Color color) {
+        jl.setFont(font);
+        jl.setForeground(color);
     }
 
     protected void showQuestion() {
@@ -170,6 +188,7 @@ public class ExamView extends BaseView {
         jPanel.add(btnC);
         jPanel.add(btnD);
         jPanel.add(btnSubmit);
+        jPanel.add(labelUserName);
         forNumbtn();
         jPanel.add(numBtnJP);
         jPanel.add(labelLeftTime);
@@ -180,7 +199,7 @@ public class ExamView extends BaseView {
 
     // 循环处理题号按钮
     protected void forNumbtn() {
-        for (int i = 1; i <= sumNum; i ++) {
+        for (int i = 1; i <= this.sumNum; i ++) {
             JButton tempBtn = new JButton(i+"");
             if (i == 1) {
                 tempBtn.setBackground(Color.LIGHT_GRAY);
