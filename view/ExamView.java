@@ -17,6 +17,8 @@ public class ExamView extends BaseView {
     private int nowNum = 1; // 当前题号
     private int passNum = 0; // 已答题数
 
+    private Color btnAnswerColor = Color.GREEN;
+
     private ArrayList<String> titles; // 存放试卷题目
     private ArrayList<String> answers; // 存放试卷正确答案
     private HashMap<Integer, String> userAnswers = new HashMap<>(); // 存放用户的答案
@@ -28,9 +30,9 @@ public class ExamView extends BaseView {
     private JButton btnB = new JButton("B");
     private JButton btnC = new JButton("C");
     private JButton btnD = new JButton("D");
-    private JButton btnPrev = new JButton("上一题");
+//    private JButton btnPrev = new JButton("上一题");
     private JButton btnSubmit = new JButton("交卷");
-    private JButton btnNext = new JButton("下一题");
+//    private JButton btnNext = new JButton("下一题");
 
     private JPanel numBtnJP = new JPanel();
     private JLabel labelLeftTime = new JLabel("剩余答题时间");
@@ -71,10 +73,10 @@ public class ExamView extends BaseView {
         btnB.setBounds(190, 370, 80, 30);
         btnC.setBounds(310, 370, 80, 30);
         btnD.setBounds(430, 370, 80, 30);
-        btnPrev.setBounds(60, 420, 80, 30);
+//        btnPrev.setBounds(60, 420, 80, 30);
         btnSubmit.setBounds(250, 420, 80, 30);
         btnSubmit.setForeground(Color.RED);
-        btnNext.setBounds(430, 420, 80, 30);
+//        btnNext.setBounds(430, 420, 80, 30);
 
         numBtnJP.setBounds(580, 15, 190, 330);
 
@@ -100,7 +102,7 @@ public class ExamView extends BaseView {
     }
 
     protected void showQuestion() {
-        String title = titles.get(nowNum);
+        String title = titles.get(nowNum - 1);
         mainText.setText("\n " + nowNum + "." + title.replace("<br>", "\n  "));
     }
 
@@ -112,7 +114,7 @@ public class ExamView extends BaseView {
             public void actionPerformed(ActionEvent e) {
                 JButton btn = (JButton)e.getSource();
                 userAnswers.put(nowNum, btn.getText());
-                btn.setBackground(Color.CYAN);
+                btn.setBackground(btnAnswerColor);
             }
         };
         btnA.addActionListener(answerListener);
@@ -124,9 +126,40 @@ public class ExamView extends BaseView {
         numBtnListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                JButton btn = (JButton)e.getSource();
+                btn.setBackground(Color.LIGHT_GRAY);
+                nowNum = Integer.parseInt(btn.getText());
+                showQuestion();
+                revertBtnAnswer();
+                showSetAnswer();
             }
         };
+    }
+
+    protected void revertBtnAnswer() {
+        btnA.setBackground(null);
+        btnB.setBackground(null);
+        btnC.setBackground(null);
+        btnD.setBackground(null);
+    }
+    protected void showSetAnswer() {
+        String answer = userAnswers.get(nowNum);
+        if (answer != null) {
+            switch (answer) {
+                case "A":
+                    btnA.setBackground(btnAnswerColor);
+                    break;
+                case "B":
+                    btnB.setBackground(btnAnswerColor);
+                    break;
+                case "C":
+                    btnC.setBackground(btnAnswerColor);
+                    break;
+                case "D":
+                    btnD.setBackground(btnAnswerColor);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -136,13 +169,16 @@ public class ExamView extends BaseView {
         jPanel.add(btnB);
         jPanel.add(btnC);
         jPanel.add(btnD);
-        jPanel.add(btnPrev);
+//        jPanel.add(btnPrev);
         jPanel.add(btnSubmit);
-        jPanel.add(btnNext);
+//        jPanel.add(btnNext);
 
         // 循环处理题号按钮
         for (int i = 1; i <= sumNum; i ++) {
             JButton tempBtn = new JButton(i+"");
+            if (i == 1) {
+                tempBtn.setBackground(Color.LIGHT_GRAY);
+            }
             tempBtn.addActionListener(numBtnListener);
             numBtnJP.add(tempBtn);
         }
