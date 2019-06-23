@@ -47,6 +47,9 @@ public class ExamView extends BaseView {
     private QuestionServer qs = new QuestionServer();
 
     public ExamView(String title, int sumNum, int sumMinute, String userName) {
+        if (sumNum < 0 || sumMinute < 0) {
+            alertAndExit("非常抱歉！题数和答题时间不可为负数！");
+        }
         if (sumNum > 32) {
             alertAndExit("非常抱歉！目前该系统最大只支持32道题");
         }
@@ -119,6 +122,9 @@ public class ExamView extends BaseView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JButton btn = (JButton)e.getSource();
+                if (userAnswers[nowNum] != null) {
+                    revertBtnAnswer();
+                }
                 userAnswers[nowNum] = btn.getText();
                 btn.setBackground(btnAnswerColor);
             }

@@ -71,7 +71,7 @@ public class LoginView extends BaseView {
                         alertMsg(message);
                     }
                     else {
-                        LoginView.this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        LoginView.this.setVisible(false);
                         new ExamView("考试-在线考试系统", 5, 90, name);
                     }
                 }
