@@ -58,19 +58,29 @@ public class LoginView extends BaseView {
         ActionListener loginListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = nameField.getText();
-                String pwd = new String(pwdField.getPassword());
-                UserServer us = new UserServer();
-                if (!us.login(name, pwd)) {
-                    String message = "对不起！您的用户名或密码错误！";
-                    JOptionPane.showMessageDialog(LoginView.this, message);
+                String name = nameField.getText().trim();
+                String pwd = new String(pwdField.getPassword()).trim();
+                if (name.isEmpty() || pwd.isEmpty()) {
+                    String message = "请输入您的" + (name.isEmpty() ? "账号" : "密码")+ "！";
+                    alertMsg(message);
                 }
                 else {
-                    LoginView.this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                    new ExamView("考试-在线考试系统", 5, 90, name);
+                    UserServer us = new UserServer();
+                    if (!us.login(name, pwd)) {
+                        String message = "对不起！您的账号或密码错误！";
+                        alertMsg(message);
+                    }
+                    else {
+                        LoginView.this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        new ExamView("考试-在线考试系统", 5, 90, name);
+                    }
                 }
             }
         };
         loginButton.addActionListener(loginListener);
+    }
+
+    protected void alertMsg(String message) {
+        JOptionPane.showMessageDialog(LoginView.this, message);
     }
 }

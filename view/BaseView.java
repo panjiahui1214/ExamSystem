@@ -19,7 +19,7 @@ public abstract class BaseView extends JFrame {
     protected void setFrame(String title) {
         this.setTitle(title);
         this.setBounds(300, 100, 800, 500);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
 }
