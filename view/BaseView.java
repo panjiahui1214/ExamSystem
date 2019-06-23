@@ -21,5 +21,6 @@ public abstract class BaseView extends JFrame {
         this.setBounds(300, 100, 800, 500);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
+        this.setResizable(false); // 设置窗体不可更改大小
     }
 }
